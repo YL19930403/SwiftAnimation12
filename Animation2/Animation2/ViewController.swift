@@ -108,11 +108,42 @@ class ViewController: UIViewController,UITextFieldDelegate {
         wobble.keyTimes = [0.0, 0.25,0.5, 0.75, 1.0]
         LoginLabel.layer.addAnimation(wobble, forKey: nil)
         
+        //添加一个气球
+        let balloon = CALayer()
+        balloon.contents = UIImage(named: "balloon")?.CGImage
+        balloon.frame = CGRect(x: -50, y: 0.0, width: 65.0, height: 70.0)
+        view.layer.insertSublayer(balloon, above: AccountF.layer)
         
+        //气球动画
+        let flight = CAKeyframeAnimation(keyPath: "position")
+        flight.duration = 3.5
+        flight.values = [
+            CGPoint(x: -50.0, y: 0.0) ,
+            CGPoint(x: view.frame.width+50, y: 160.0),
+            CGPoint(x: -50.0, y: LoginBtn.center.y)
+            ].map{
+                NSValue(CGPoint:$0)
+        }
         
+        flight.keyTimes = [0.0,0.5,1.0]
+        balloon.addAnimation(flight, forKey: nil)
+        balloon.position = CGPoint(x: -50.0, y: LoginBtn.center.y)
     }
    
 
+    override func animationDidStop(anim: CAAnimation, finished flag: Bool) {
+          let layer = anim.valueForKey("layer")
+        let pause = CABasicAnimation(keyPath: "transform.scale")
+        pause.fromValue = 1.5
+        pause.toValue = 1.0
+        pause.duration = 0.25
+        layer?.addAnimation(pause, forKey: nil )
+    }
+    
+    func textFieldDidBeginEditing(textField: UITextField) {
+        print(info.layer.animationKeys())
+        info.layer.removeAnimationForKey("infoAppear")
+    }
 }
 
 
